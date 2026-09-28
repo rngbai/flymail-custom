@@ -248,6 +248,25 @@ class BaseIMAPReceiver(MailReceiver):
             raise ConnectionError("Not connected")
         return await asyncio.to_thread(self._fetch_detail_sync, message_id, folder)
 
+    async def fetch_raw_message(self, message_id: str, folder: str = "INBOX") -> bytes:
+        if not self._conn:
+            raise ConnectionError("Not connected")
+        return await asyncio.to_thread(self._fetch_raw_sync, message_id, folder)
+
+    def _fetch_raw_sync(self, message_id: str, folder: str) -> bytes:
+        uid = message_id.rsplit("_", 1)[-1] if "_" in message_id else message_id
+        folder = self._normalize_folder(folder)
+        status, _ = self._conn.select(self._quote_mailbox(folder), readonly=True)
+        if status != "OK":
+            raise ValueError(f"unable to select mailbox {folder}")
+        status, msg_data = self._conn.uid("FETCH", uid, "(BODY.PEEK[])")
+        if status != "OK":
+            raise ValueError(f"Message {uid} not found")
+        for item in msg_data:
+            if isinstance(item, tuple) and len(item) == 2 and item[1]:
+                return item[1]
+        raise ValueError(f"Message {uid} has no raw body")
+
     def _fetch_detail_sync(self, message_id: str, folder: str) -> Message:
         """同步获取邮件详情
 

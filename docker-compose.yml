@@ -1,4 +1,21 @@
 services:
+  db:
+    image: mariadb:11.4
+    container_name: flymail-db
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: flymail
+      MARIADB_USER: flymail
+      MARIADB_PASSWORD: ${FLYMAIL_DB_PASSWORD:?FLYMAIL_DB_PASSWORD is required}
+      MARIADB_ROOT_PASSWORD: ${FLYMAIL_DB_ROOT_PASSWORD:?FLYMAIL_DB_ROOT_PASSWORD is required}
+    volumes:
+      - ${FLYMAIL_DB_DATA_PATH:-./mysql}:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -uroot -p$${MARIADB_ROOT_PASSWORD} --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
   flymail-app:
     build:
       context: .
@@ -14,10 +31,13 @@ services:
       APP_PORT: 8080
       FLYMAIL_DATA_DIR: /app/data
       FLYMAIL_UI_DIR: /app/frontend-dist
-      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
+      DATABASE_URL: mysql://flymail:${FLYMAIL_DB_PASSWORD}@db:3306/flymail?charset=utf8mb4
       FLYMAIL_HTTP_PROXY: ${FLYMAIL_HTTP_PROXY:-}
       FLYMAIL_HTTPS_PROXY: ${FLYMAIL_HTTPS_PROXY:-}
       FLYMAIL_ALL_PROXY: ${FLYMAIL_ALL_PROXY:-}
       FLYMAIL_NO_PROXY: ${FLYMAIL_NO_PROXY:-127.0.0.1,localhost}
     volumes:
       - ${FLYMAIL_DATA_PATH:-./data}:/app/data
+    depends_on:
+      db:
+        condition: service_healthy

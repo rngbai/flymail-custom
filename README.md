@@ -1,5 +1,9 @@
 # FlyMail
 
+> 当前仓库为通用定制版：保留 FlyMail 多邮箱管理能力，并增加可选的 service-token 内部邮件读取接口和自带 MariaDB 的 Docker Compose 部署方案。它不绑定任何具体业务系统。
+
+完整部署、迁移和内部接口说明见：[docs/通用部署与内部接口.md](docs/通用部署与内部接口.md)。
+
 FlyMail 是一个面向 Docker 部署的多用户邮件客户端，支持多邮箱账号管理、历史邮件后台同步、断点续传、附件与内嵌图片缓存，以及本地持久化存储。
 
 感谢原作者 [DinDing1/FlyMail](https://github.com/DinDing1/FlyMail)。当前仓库已经基于现有版本重构为独立的 Docker 多用户版本，不再依赖飞牛应用中心运行环境。

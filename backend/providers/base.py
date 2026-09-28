@@ -197,6 +197,10 @@ class MailReceiver(ABC):
     async def fetch_message_detail(self, message_id: str, folder: str = "INBOX") -> Message:
         pass
 
+    async def fetch_raw_message(self, message_id: str, folder: str = "INBOX") -> bytes:
+        """返回服务器上的原始 RFC822 邮件；不支持时由调用方降级到缓存。"""
+        raise NotImplementedError
+
     async def fetch_attachment_data(self, message_id: str, folder: str, part_number: int) -> Optional[bytes]:
         """获取邮件附件的二进制数据
 

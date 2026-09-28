@@ -20,6 +20,7 @@ from routes.admin_users import router as admin_users_router
 from routes.auth import oauth_callback_app, router as oauth_router
 from routes.compose import router as compose_router
 from routes.folders import router as folders_router
+from routes.internal import router as internal_router
 from routes.local_auth import router as local_auth_router
 from routes.messages import router as messages_router
 from routes.notifications import router as notifications_router
@@ -115,6 +116,7 @@ app.include_router(accounts_router)
 app.include_router(oauth_router)
 app.include_router(compose_router)
 app.include_router(folders_router)
+app.include_router(internal_router)
 app.include_router(messages_router)
 app.include_router(notifications_router)
 app.include_router(settings_router)

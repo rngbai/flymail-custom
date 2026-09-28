@@ -19,6 +19,7 @@ frontend/.vite/
 backend/data/
 backend/ui/
 data/
+mysql/
 .env
 .env.local
 
